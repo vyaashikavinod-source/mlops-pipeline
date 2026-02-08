@@ -1,0 +1,14 @@
+data:
+  n_rows: 120000
+  random_seed: 42
+
+model:
+  max_depth: 5
+  n_estimators: 350
+  learning_rate: 0.05
+  subsample: 0.9
+  colsample_bytree: 0.9
+  reg_lambda: 1.0
+
+eval:
+  threshold: 0.5

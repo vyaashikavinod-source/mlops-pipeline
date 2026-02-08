@@ -1,0 +1,90 @@
+{
+  "family": "enterprise-mlops-api-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "REPLACE_ME_EXECUTION_ROLE_ARN",
+  "taskRoleArn": "REPLACE_ME_TASK_ROLE_ARN",
+  "containerDefinitions": [
+    {
+      "name": "mlops-api",
+      "image": "REPLACE_ME",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "MODEL_URI",
+          "value": "models:/xgb_churn@champion"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "MLFLOW_TRACKING_URI",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:MLFLOW_TRACKING_URI::"
+        },
+        {
+          "name": "MONITORING_DB_URL",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:MONITORING_DB_URL::"
+        },
+        {
+          "name": "SLACK_WEBHOOK_URL",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:SLACK_WEBHOOK_URL::"
+        },
+        {
+          "name": "SMTP_HOST",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:SMTP_HOST::"
+        },
+        {
+          "name": "SMTP_PORT",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:SMTP_PORT::"
+        },
+        {
+          "name": "SMTP_USERNAME",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:SMTP_USERNAME::"
+        },
+        {
+          "name": "SMTP_PASSWORD",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:SMTP_PASSWORD::"
+        },
+        {
+          "name": "SMTP_STARTTLS",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:SMTP_STARTTLS::"
+        },
+        {
+          "name": "ALERT_EMAIL_FROM",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:ALERT_EMAIL_FROM::"
+        },
+        {
+          "name": "ALERT_EMAIL_TO",
+          "valueFrom": "REPLACE_ME_APP_CONFIG_SECRET_ARN:ALERT_EMAIL_TO::"
+        }
+      ],
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()\" || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 30
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/enterprise-mlops-api",
+          "awslogs-region": "REPLACE_ME_REGION",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+name: monitoring-nightly
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # 06:00 UTC daily
+  workflow_dispatch:
+
+jobs:
+  monitoring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run monitoring snapshot + alerts + retrain (requires reachable MONITORING_DB_URL, MLFLOW_TRACKING_URI)
+        env:
+          MONITORING_DB_URL: ${{ secrets.MONITORING_DB_URL }}
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_STARTTLS: ${{ secrets.SMTP_STARTTLS }}
+          ALERT_EMAIL_FROM: ${{ secrets.ALERT_EMAIL_FROM }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+        run: |
+          dvc init -q || true
+          dvc repro -q
+          python scripts/materialize_metrics.py --db "$MONITORING_DB_URL" --baseline data/processed/train.parquet --out reports/monitoring_snapshot.json
+          python scripts/drift_alert.py --drift reports/monitoring_snapshot.json --threshold 0.25 --email --slack
+          python scripts/retrain_if_needed.py --processed data/processed --model-name xgb_churn --alias champion --drift-report reports/monitoring_snapshot.json --perf-report reports/monitoring_snapshot.json

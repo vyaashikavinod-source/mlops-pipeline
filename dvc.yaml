@@ -1,0 +1,46 @@
+stages:
+  make_data:
+    cmd: python scripts/make_dataset.py --out data/raw/churn.csv
+    deps:
+      - scripts/make_dataset.py
+      - params.yaml
+    params:
+      - data
+    outs:
+      - data/raw/churn.csv
+
+  preprocess:
+    cmd: python scripts/preprocess.py --in data/raw/churn.csv --out data/processed
+    deps:
+      - scripts/preprocess.py
+      - src/features/preprocess.py
+      - data/raw/churn.csv
+    outs:
+      - data/processed
+
+  train_local:
+    cmd: python scripts/train_local.py --data data/processed --out models
+    deps:
+      - scripts/train_local.py
+      - src/modeling/train.py
+      - src/modeling/schema.py
+      - src/features/preprocess.py
+      - data/processed
+      - params.yaml
+    params:
+      - model
+      - eval
+    outs:
+      - models/model.joblib
+      - models/model_meta.json
+    metrics:
+      - reports/metrics.json
+
+  drift_report:
+    cmd: python scripts/drift_report.py --baseline data/processed/train.parquet --current data/processed/val.parquet --out reports/drift.json
+    deps:
+      - scripts/drift_report.py
+      - data/processed/train.parquet
+      - data/processed/val.parquet
+    outs:
+      - reports/drift.json

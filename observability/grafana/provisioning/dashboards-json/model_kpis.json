@@ -1,0 +1,129 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Monitoring Postgres",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT ts as time, n_predictions, n_feedback, roc_auc, pr_auc, brier, ece, worst_feature, worst_psi FROM daily_metrics ORDER BY ts DESC LIMIT 30;"
+        }
+      ],
+      "title": "Daily model KPIs (latest 30)",
+      "type": "table"
+    },
+    {
+      "datasource": "Monitoring Postgres",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 11,
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT ts as time, roc_auc as value FROM daily_metrics ORDER BY ts;"
+        }
+      ],
+      "title": "ROC-AUC over time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Monitoring Postgres",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 12,
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT ts as time, worst_psi as value FROM daily_metrics ORDER BY ts;"
+        }
+      ],
+      "title": "Worst PSI over time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Monitoring Postgres",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 13,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "format": "table",
+          "refId": "A",
+          "rawSql": "SELECT ts as time, segment_type, segment_value, n, roc_auc, pr_auc, brier FROM segment_metrics ORDER BY ts DESC, n DESC LIMIT 50;"
+        }
+      ],
+      "title": "Segment metrics (top 50 latest)",
+      "type": "table"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "mlops",
+    "model-monitoring"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timezone": "",
+  "title": "Model KPI Dashboard",
+  "version": 1
+}

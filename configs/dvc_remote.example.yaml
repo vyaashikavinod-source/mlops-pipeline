@@ -1,0 +1,5 @@
+remote_name: s3remote
+default: true
+type: s3
+url: s3://YOUR_BUCKET/mlops-enterprise
+# endpointurl: http://127.0.0.1:9000

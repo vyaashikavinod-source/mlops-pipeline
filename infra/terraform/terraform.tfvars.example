@@ -1,0 +1,18 @@
+domain_name = "yourdomain.com"
+subdomain   = "api"
+
+github_org  = "YOUR_GH_ORG"
+github_repo = "YOUR_REPO"
+
+app_config_json = jsonencode({
+  MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+  MONITORING_DB_URL   = "postgresql+psycopg2://monitor:monitor@127.0.0.1:5433/monitoring"
+  SLACK_WEBHOOK_URL   = ""
+  SMTP_HOST           = "smtp.gmail.com"
+  SMTP_PORT           = "587"
+  SMTP_USERNAME       = ""
+  SMTP_PASSWORD       = ""
+  SMTP_STARTTLS       = "true"
+  ALERT_EMAIL_FROM    = ""
+  ALERT_EMAIL_TO      = ""
+})

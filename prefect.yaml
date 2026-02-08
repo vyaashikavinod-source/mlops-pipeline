@@ -1,0 +1,11 @@
+name: enterprise-mlops
+prefect-version: 3
+
+deployments:
+  - name: dvc-pipeline
+    entrypoint: flows/mlops_flow.py:mlops_pipeline
+    tags: ["mlops", "dvc"]
+
+  - name: monitoring-daily
+    entrypoint: flows/monitoring_flow.py:monitoring_daily
+    tags: ["mlops", "monitoring"]
