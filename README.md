@@ -2,7 +2,7 @@
 
 This repo upgrades the earlier stack to include:
 
-## ✅ Included
+## ✅ Details
 - **DVC** pipelines + reproducible artifacts
 - **Prefect v3** orchestration (deployments + schedules)
 - **MLflow Tracking + Model Registry** (Postgres backend + MinIO artifact store)
